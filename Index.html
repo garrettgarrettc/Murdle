@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Murdle</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f0f0; }
+        .game-board { display: grid; grid-template-columns: repeat(5, 50px); gap: 10px; }
+        .tile { width: 50px; height: 50px; background: #fff; border: 2px solid #ddd; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; }
+        .correct { background: #6aaa64; }
+        .present { background: #c9b458; }
+        .absent { background: #787c7e; }
+    </style>
+</head>
+<body>
+    <div class="game-board" id="game-board"></div>
+    <script>
+        const solution = "CRANE"; // The word to guess
+        const attempts = [];
+        let currentAttempt = "";
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key.match(/^[a-zA-Z]$/) && currentAttempt.length < 5) {
+                currentAttempt += event.key.toUpperCase();
+                render();
+            } else if (event.key === 'Enter' && currentAttempt.length === 5) {
+                if (!attempts.includes(currentAttempt)) {
+                    attempts.push(currentAttempt);
+                    currentAttempt = "";
+                }
+                render();
+            } else if (event.key === 'Backspace') {
+                currentAttempt = currentAttempt.slice(0, -1);
+                render();
+            }
+        });
+
+        function render() {
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';
+
+            attempts.concat(currentAttempt).forEach((attempt, attemptIndex) => {
+                Array.from(attempt).forEach((letter, index) => {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.textContent = letter;
+
+                    if (attemptIndex < attempts.length) {
+                        if (letter === solution[index]) {
+                            tile.classList.add('correct');
+                        } else if (solution.includes(letter)) {
+                            tile.classList.add('present');
+                        } else {
+                            tile.classList.add('absent');
+                        }
+                    }
+
+                    board.appendChild(tile);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
